@@ -48,9 +48,10 @@ final class StudioClock
     {
         $today = self::local($now ?? now())->startOfDay();
 
-        return collect(range(0, config('studio.booking_window_days') - 1))
-            ->map(fn (int $i) => $today->addDays($i)->toDateString())
-            ->all();
+        return array_map(
+            fn (int $i) => $today->addDays($i)->toDateString(),
+            range(0, (int) config('studio.booking_window_days') - 1),
+        );
     }
 
     /** First instant after the Booking window. */

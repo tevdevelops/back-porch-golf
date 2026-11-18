@@ -36,7 +36,7 @@ final class StripePaymentGateway implements PaymentGateway
             'metadata' => ['booking_id' => $booking->id],
             'payment_intent_data' => ['metadata' => ['booking_id' => $booking->id]],
             // Stripe's minimum is 30 minutes; the Hold lasts slightly longer.
-            'expires_at' => now()->addMinutes(config('studio.hold_minutes'))->addMinute()->timestamp,
+            'expires_at' => now()->addMinutes(config('studio.hold_minutes'))->addMinute()->getTimestamp(),
             'success_url' => $successUrl,
             'cancel_url' => $cancelUrl,
             'line_items' => [

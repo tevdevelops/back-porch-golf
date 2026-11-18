@@ -10,6 +10,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StoreBookingRequest extends FormRequest
 {
+    /** @return array<string, list<string>> */
     public function rules(): array
     {
         return [
@@ -23,6 +24,7 @@ class StoreBookingRequest extends FormRequest
         ];
     }
 
+    /** @return array<string, string> */
     public function messages(): array
     {
         return [

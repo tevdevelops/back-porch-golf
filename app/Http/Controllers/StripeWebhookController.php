@@ -8,7 +8,9 @@ use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Stripe\Checkout\Session;
 use Stripe\Exception\SignatureVerificationException;
+use Stripe\PaymentIntent;
 use Stripe\Webhook;
 use UnexpectedValueException;
 
@@ -30,8 +32,14 @@ class StripeWebhookController extends Controller
             return response('Invalid signature', 400);
         }
 
+        // We only subscribe to checkout session events.
         $session = $event->data->object;
-        $booking = Booking::query()->find($session->metadata->booking_id ?? null);
+        if (! $session instanceof Session) {
+            return response('Ignored', 200);
+        }
+
+        $bookingId = $session->metadata['booking_id'] ?? null;
+        $booking = is_string($bookingId) ? Booking::query()->find($bookingId) : null;
 
         if ($booking === null) {
             Log::warning('Stripe webhook for unknown booking', ['event' => $event->id, 'type' => $event->type]);
@@ -39,9 +47,13 @@ class StripeWebhookController extends Controller
             return response('Ignored', 200);
         }
 
+        $paymentIntentId = $session->payment_intent instanceof PaymentIntent
+            ? $session->payment_intent->id
+            : $session->payment_intent;
+
         match ($event->type) {
-            'checkout.session.completed' => $session->payment_status === 'paid'
-                ? $confirm->handle($booking, (string) $session->payment_intent)
+            'checkout.session.completed' => $session->payment_status === Session::PAYMENT_STATUS_PAID && $paymentIntentId !== null
+                ? $confirm->handle($booking, $paymentIntentId)
                 : null,
             'checkout.session.expired' => $expire->handle($booking),
             default => null,

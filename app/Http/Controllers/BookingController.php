@@ -29,7 +29,11 @@ class BookingController extends Controller
             CarbonImmutable::parse($request->string('starts_at')),
             $request->integer('minutes'),
             $request->integer('players'),
-            $request->only('name', 'email', 'phone'),
+            [
+                'name' => $request->string('name')->trim()->toString(),
+                'email' => $request->string('email')->trim()->toString(),
+                'phone' => $request->string('phone')->trim()->toString(),
+            ],
         );
 
         try {

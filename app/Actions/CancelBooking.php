@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Enums\BookingStatus;
 use App\Models\Booking;
+use App\Payments\PaymentFailed;
 use App\Payments\PaymentGateway;
 use Carbon\CarbonImmutable;
 use Illuminate\Validation\ValidationException;
@@ -16,7 +17,10 @@ final class CancelBooking
 {
     public function __construct(private readonly PaymentGateway $payments) {}
 
-    /** @throws ValidationException */
+    /**
+     * @throws ValidationException
+     * @throws PaymentFailed
+     */
     public function handle(Booking $booking, ?CarbonImmutable $now = null): Booking
     {
         $now ??= now();

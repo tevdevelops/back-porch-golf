@@ -27,7 +27,7 @@ final class DaySchedule
 
         // Look a few hours past midnight too, so the grid knows how long a
         // late-night booking can run. Those blocks have offset >= minutes.
-        $blocks = Booking::query()
+        $blocks = array_values(Booking::query()
             ->blocking($now)
             ->overlapping($dayStart, $dayEnd->addMinutes(config('studio.max_minutes')))
             ->orderBy('starts_at')
@@ -41,8 +41,7 @@ final class DaySchedule
                 'ends_at' => $b->ends_at->toIso8601ZuluString(),
                 'status' => self::gridStatus($b, $now),
             ])
-            ->values()
-            ->all();
+            ->all());
 
         return [
             'date' => $date,
