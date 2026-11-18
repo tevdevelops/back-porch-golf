@@ -87,6 +87,13 @@ watch(() => props.schedule.date, scrollToStart);
 
 <template>
     <div
+        v-if="bays.length === 0"
+        class="rounded-2xl border border-dashed border-line bg-linen p-10 text-center text-ink-soft"
+    >
+        No bays are open for booking yet. Check back soon.
+    </div>
+    <div
+        v-else
         class="overflow-hidden rounded-2xl border border-line bg-linen shadow-sm"
     >
         <div
