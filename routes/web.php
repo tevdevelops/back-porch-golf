@@ -26,8 +26,3 @@ Route::post('/door', [DoorController::class, 'check'])
     ->name('door.check');
 
 Route::post('/stripe/webhook', StripeWebhookController::class)->name('stripe.webhook');
-
-// PROTOTYPE — throwaway design variants. Local only.
-if (app()->environment('local')) {
-    Route::inertia('/prototype/design', 'prototype/Design');
-}
